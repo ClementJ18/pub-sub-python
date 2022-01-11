@@ -1,0 +1,4 @@
+ortools==9.2.9972
+redis==4.1.0
+Flask==2.0.2
+Faker==11.3.0
