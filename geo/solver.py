@@ -6,6 +6,10 @@ from ortools.constraint_solver import pywrapcp
 
 from typing import List, Tuple, Dict, Optional
 
+"""
+Most of this is example code from the tutorial, the entry point is calculate_pairwise_distance, rest is internal
+"""
+
 def create_data_model(locations : List[Tuple[int, int]]) -> Dict:
     """Stores the data for the problem."""
     data = {}
@@ -65,8 +69,22 @@ def get_routes(manager, routing, solution):
         routes.append(route)
     return routes
 
-def calculate_pairwise_distance(locations : List[Tuple[int, int]]) -> Optional[List[List[int]]]:
-    """Entry point of the program."""
+def calculate_pairwise_distance(locations : List[Tuple[int, int]]) -> List[List[int]]:
+    """Entry point of the solver.
+
+    Parameters
+    -----------
+    locations : List[Tuple[int, int]]
+        The list of lat/lon coords to calculate the pairwise distance for
+
+
+    Return
+    -------
+    List[List[int]]
+        The list of solutions returned, this is usually abbriviated to only use the
+        first entry.
+
+    """
     # Instantiate the data problem.
     data = create_data_model(locations)
 

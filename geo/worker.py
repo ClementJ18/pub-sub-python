@@ -16,22 +16,31 @@ ps = client.pubsub()
 
 """
 
-def solve_problem(message):
+def solve_problem(message : dict) -> None:
+    """Solve a problem, published the answer to the "solution" queue
+    
+    Parameters
+    -----------
+    message : dict
+        The redis message telling the worker there is a new problem to solve containing the ID.
+
+    """
     #if it's not a 'message' type then it's not a problem
     if message["type"] != "message":
         return
     
     #retrieve the problem stored by the client
-    problem_id = message["data"]
-    raw = client.get(f"{problem_id}_problem")
-    coords = json.loads(raw)
+    p_id = message["data"]
+    problem = json.loads(client.get(p_id))
 
-    distances = calculate_pairwise_distance(coords)
+    distances = calculate_pairwise_distance(problem["problem"])
     if distances:
         distances = distances[0]
     
-    client.set(f"{problem_id}_solution", json.dumps(distances))
-    client.publish("solutions", problem_id)
+    problem["solutions"] = distances
+    problem["solved"] = True
+    client.set(p_id, json.dumps(problem))
+    client.publish("solutions", p_id)
 
 ps.subscribe(problems=solve_problem)
 print("Worker listening")
