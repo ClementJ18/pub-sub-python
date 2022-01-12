@@ -37,7 +37,7 @@ def solve_problem(message : dict) -> None:
     if distances:
         distances = distances[0]
     
-    problem["solutions"] = distances
+    problem["solution"] = distances
     problem["solved"] = True
     client.set(p_id, json.dumps(problem))
     client.publish("solutions", p_id)

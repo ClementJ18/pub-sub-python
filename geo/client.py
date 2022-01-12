@@ -69,19 +69,26 @@ def is_solved(p_id : str) -> bool:
 
 parser = argparse.ArgumentParser(description='Publish some problems')
 group = parser.add_mutually_exclusive_group()
-group.add_argument('--file', '--f', type=argparse.FileType('r'))
-group.add_argument('--problem', '--p')
+group.add_argument('--file', '--f', dest='file', type=argparse.FileType('r'))
+group.add_argument('--problem', '--p', dest='problem')
 args = parser.parse_args()
 
 ps.subscribe("solutions")
-if args['--file']:
-    problems = json.load(args['--file'])
+ids = []
+if args.file:
+    problems = json.load(args.file)
     for p in problems:
-        publish_problem(p)
-elif args['--problem']:
-    publish_problem(json.loads(args['--problem']))
+        ids.append(publish_problem(p))
+elif args.problem:
+    ids = [publish_problem(json.loads(args.problem))]
 
 print("Client listening for answers")
 for message in ps.listen():
     print(message["data"])
     print(get_solution(message))
+
+    if message["data"] in ids:
+        ids.remove(message["data"])
+
+    if not ids:
+        break
